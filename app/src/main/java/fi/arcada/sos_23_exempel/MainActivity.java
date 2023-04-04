@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
         // Vi avläser vår EditText och omvandlar till String
         // String namn = inputText.getText().toString();
 
-        outputText.setText(Statistics.calcMean(values).toString());
+        outputText.setText(String.format("Hej %s\n\nMedelvärde:%.2f",
+                inputText.getText(),
+                Statistics.calcMean(values)));
 
     }
 }
