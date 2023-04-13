@@ -30,7 +30,13 @@ public class Statistics {
     public static double calcMedian(ArrayList<Double> values) {
         ArrayList<Double> sorted = new ArrayList<>(values);
         int middle = sorted.size()/2;
-        return sorted.get(middle);
+        double median = sorted.get(middle);
+
+        // Om datamängden är jämn
+        if (sorted.size() % 2 == 0) {
+            median = (sorted.get(middle) + sorted.get(middle-1)) / 2;
+        }
+        return median;
     }
 
     public static double calcMean(ArrayList<Double> values) {
