@@ -4,6 +4,7 @@ import android.provider.ContactsContract;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Statistics {
 
@@ -27,24 +28,47 @@ public class Statistics {
         return sorted;
     }
 
+    public static double calcMean(ArrayList<Double> values) {
+        double total = 0;
+        for (int i = 0; i < values.size(); i++) {
+            total += values.get(i);
+        }
+
+        return total / values.size();
+    }
+
     public static double calcMedian(ArrayList<Double> values) {
-        ArrayList<Double> sorted = new ArrayList<>(values);
+        ArrayList<Double> sorted = sortValues(values);
         int middle = sorted.size()/2;
         double median = sorted.get(middle);
 
-        // Om datamängden är jämn
+        // Om datamängden har jämnt antal
         if (sorted.size() % 2 == 0) {
             median = (sorted.get(middle) + sorted.get(middle-1)) / 2;
         }
+
         return median;
     }
 
-    public static double calcMean(ArrayList<Double> values) {
-        double sum = 0;
-        for (int i = 0; i < values.size(); i++) {
-            sum += values.get(i);
+    public static double calcMode(ArrayList<Double> values) {
+        HashMap<Double, Integer> valueCount = new HashMap<>();
+        for (double dataValue: values) {
+            Integer count = valueCount.get(dataValue);
+
+            if (count == null) count = 0;
+            valueCount.put(dataValue, count + 1);
         }
-        return sum / values.size();
+        int maxCount = 0;
+        double modeValue = 0;
+
+        for (Double dataValue: valueCount.keySet()) {
+            Integer curCount = valueCount.get(dataValue);
+            if (curCount > maxCount) {
+                maxCount = curCount;
+                modeValue = dataValue;
+            }
+        }
+        return modeValue;
     }
 
     public static double calcSD(ArrayList<Double> values) {
@@ -58,5 +82,48 @@ public class Statistics {
 
         return Math.sqrt(variance);
     }
+
+    public static double calcMin(ArrayList<Double> values) {
+        ArrayList<Double> sorted = new ArrayList<>(sortValues(values));
+        return sorted.get(0);
+    }
+
+    public static double calcMax(ArrayList<Double> values) {
+        ArrayList<Double> sorted = new ArrayList<>(sortValues(values));
+        return sorted.get(sorted.size() - 1);
+    }
+
+    public static double calcLQ(ArrayList<Double> values) {
+        ArrayList<Double> sorted = new ArrayList<>(sortValues(values));
+        double lowerQuartile = sorted.get((int) (sorted.size() * 0.25));
+
+        if (sorted.size() <= 2) {
+            return sorted.get(0);
+        } else if (sorted.size() % 2 == 0 && sorted.size() <= 4){
+            lowerQuartile = (sorted.get((int) (sorted.size() * 0.25)) + sorted.get((int) (sorted.size() * 0.25) - 1)) / 2;
+        }
+        return lowerQuartile;
+    }
+
+    public static double calcUQ(ArrayList<Double> values) {
+        ArrayList<Double> sorted = new ArrayList<>(sortValues(values));
+        double upperQuartile = sorted.get((int) (sorted.size() * 0.75));
+
+        if (sorted.size() <= 2) {
+            return sorted.get(0);
+        } else if (sorted.size() % 2 == 0 && sorted.size() <= 4){
+            upperQuartile = (sorted.get((int) (sorted.size() * 0.75)) + sorted.get((int) (sorted.size() * 0.75) - 1)) / 2;
+        }
+        return upperQuartile;
+    }
+
+    public static double calcQR(ArrayList<Double> values) {
+        double lowerQuartile = calcLQ(sortValues(values));
+        double upperQuartile = calcUQ(sortValues(values));
+
+        return upperQuartile - lowerQuartile;
+    }
+
+
 
 }
